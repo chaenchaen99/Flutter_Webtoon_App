@@ -29,15 +29,20 @@ class HomeScreen extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             //Future가 완료되서 데이터가 존재하면
-            return ListView.builder(
+            return ListView.separated(
               //ListView.builder는 사용자가 보고있는 아이템만 빌드한다.
               //사용자가 보고있지 않는 아이템들은 메모리에서 제거한다.
+              //필요할 때 아이템을 만든다.
               scrollDirection: Axis.horizontal,
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
+                print(index);
                 var webtoon = snapshot.data![index];
                 return Text(webtoon.title);
               },
+              separatorBuilder: (context, index) => const SizedBox(
+                width: 20,
+              ),
             );
             //ListView: 많은 양의 데이터를 연속적으로 보여줄 때 사용. 여러항목을 나열하는 데 최적화된 Widget
           }
