@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_webtoon/models/webtoon_model.dart';
 import 'package:flutter_webtoon/services/api_services.dart';
 
@@ -28,23 +30,14 @@ class HomeScreen extends StatelessWidget {
         future: webtoons,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            //Future가 완료되서 데이터가 존재하면
-            return ListView.separated(
-              //ListView.builder는 사용자가 보고있는 아이템만 빌드한다.
-              //사용자가 보고있지 않는 아이템들은 메모리에서 제거한다.
-              //필요할 때 아이템을 만든다.
-              scrollDirection: Axis.horizontal,
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                print(index);
-                var webtoon = snapshot.data![index];
-                return Text(webtoon.title);
-              },
-              separatorBuilder: (context, index) => const SizedBox(
-                width: 20,
-              ),
+            return Column(
+              children: [
+                const SizedBox(
+                  height: 50,
+                ),
+                Expanded(child: makeList(snapshot)),
+              ],
             );
-            //ListView: 많은 양의 데이터를 연속적으로 보여줄 때 사용. 여러항목을 나열하는 데 최적화된 Widget
           }
           return const Center(
             child: CircularProgressIndicator(),
@@ -53,4 +46,60 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+ListView makeList(AsyncSnapshot<List<WebtoonModel>> snapshot) {
+  return ListView.separated(
+    //ListView.builder는 사용자가 보고있는 아이템만 빌드한다.
+    //사용자가 보고있지 않는 아이템들은 메모리에서 제거한다.
+    //필요할 때 아이템을 만든다.
+    scrollDirection: Axis.horizontal,
+    itemCount: snapshot.data!.length,
+    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+    itemBuilder: (context, index) {
+      print(index);
+      var webtoon = snapshot.data![index];
+      return Column(
+        children: [
+          Container(
+            width: 250,
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+              //clipBehavior는 자식의 부모 영역 침법을 제어하는 방법
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 15,
+                  offset: const Offset(
+                    10,
+                    10,
+                  ),
+                  color: Colors.black.withOpacity(0.3),
+                )
+              ],
+            ),
+            child: Image.network(
+              webtoon.thumb,
+              headers: const {
+                "User-Agent":
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
+              },
+              //header를 붙여야 하는 이유: https://velog.io/@wogks27/%EC%9D%B4%EB%AF%B8%EC%A7%80-image.network-403%EC%97%90
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Text(webtoon.title,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w200,
+              ))
+        ],
+      );
+    },
+    separatorBuilder: (context, index) => const SizedBox(
+      width: 40,
+    ),
+  );
 }
