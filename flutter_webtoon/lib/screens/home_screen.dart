@@ -6,6 +6,7 @@ import 'package:flutter_webtoon/services/api_services.dart';
 import 'package:flutter_webtoon/widgets/webtoon_widget.dart';
 
 class HomeScreen extends StatelessWidget {
+  //getTodaysToons는 어떤 데이터도 의존하지 않기 때문에 StatelessWidget내에서 사용가능했다.
   Future<List<WebtoonModel>> webtoons = ApiService.getTodaysToons();
 
   HomeScreen({super.key});
